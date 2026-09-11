@@ -456,6 +456,7 @@
   </div>
 </div>
 
+<script src="assets/agency-logos.js"></script>
 <script>
 const OBSERVATOIRE_NOTE=`PRO BTP a créé L'Observatoire Santé pour accompagner toutes les personnes qui souhaitent devenir actrices de leur bien-être : comprendre, prévenir et agir sur leur santé au quotidien.
 
@@ -544,7 +545,12 @@ function normalizeState(data){
 function load(){try{return normalizeState(JSON.parse(localStorage.getItem(STORE)))}catch(e){return defaults()}}
 function save(){state.currentClient=currentClient;localStorage.setItem(STORE,JSON.stringify(state))}
 function iso(d){return d.toISOString().slice(0,10)}
-function client(){return state.clients.find(c=>c.id===currentClient)||state.clients[0]||defaults().clients[0]}
+function client(){
+  const c=state.clients.find(c=>c.id===currentClient)||state.clients[0]||defaults().clients[0];
+  const agency=String(c.name).toLowerCase().replace(/[^a-z]/g,'');
+  if(['lagence','lahgence'].includes(agency)&&window.AGENCY_LOGOS)return {...c,logo:c.logo||window.AGENCY_LOGOS.purple,creationLogo:window.AGENCY_LOGOS.white};
+  return c;
+}
 function safe(v){return String(v||'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]))}
 
 const staticHosting=location.hostname.endsWith('.github.io');
@@ -1174,6 +1180,6 @@ function openAnalysisImport(){
 
 render();
 </script>
-<script src="assets/studio/studio.js?v=3"></script>
+<script src="assets/studio/studio.js?v=4"></script>
 </body>
 </html>
