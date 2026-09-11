@@ -744,12 +744,7 @@ async function generateIdeas(){
     save();
     status.textContent=`${generated.length} idées prêtes pour ${c.name}.`;
   }catch(err){
-    const generated=buildLocalIdeas(payload).map((idea,i)=>({id:`idea-${Date.now()}-${i}`,clientId:c.id,keyword:query,...idea}));
-    state.ideas=(state.ideas||[]).filter(idea=>idea.clientId!==c.id).concat(generated);
-    expandedIdeas.add(c.id);
-    renderIdeas();
-    save();
-    status.textContent='La génération est indisponible : idées de démo affichées.';
+    status.textContent='La génération IA n’est pas encore connectée sur cette version en ligne. Aucune nouvelle idée n’a été créée.';
   }
 }
 async function fetchIdeasFromServer(payload){
@@ -1180,6 +1175,6 @@ function openAnalysisImport(){
 
 render();
 </script>
-<script src="assets/studio/studio.js?v=7"></script>
+<script src="assets/studio/studio.js?v=8"></script>
 </body>
 </html>
