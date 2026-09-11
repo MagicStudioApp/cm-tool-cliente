@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 220" role="img" aria-label="L'Observatoire Santé">
+  <rect width="640" height="220" fill="transparent"/>
+  <g fill="#1f5f63">
+    <text x="320" y="78" text-anchor="middle" font-family="Cormorant Garamond, Georgia, serif" font-size="42" font-weight="700" letter-spacing="4">L'OBSERVATOIRE</text>
+    <text x="320" y="128" text-anchor="middle" font-family="DM Sans, Arial, sans-serif" font-size="29" font-weight="700" letter-spacing="10">SANTÉ</text>
+  </g>
+  <path d="M180 158 C240 190, 400 190, 460 158" fill="none" stroke="#7fb7a3" stroke-width="8" stroke-linecap="round"/>
+  <circle cx="320" cy="172" r="10" fill="#d7a64b"/>
+</svg>

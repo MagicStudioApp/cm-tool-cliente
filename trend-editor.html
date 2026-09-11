@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="fr"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Éditeur de tendances</title>
+<style>
+*{box-sizing:border-box}body{margin:0;background:#f6f6f4;color:#20231f;font:15px system-ui}header{padding:24px;border-bottom:1px solid #ddd;background:white}h1{font-size:24px;margin:0}main{max-width:1100px;margin:auto;padding:24px;display:grid;grid-template-columns:1fr 1fr;gap:32px}form{display:grid;gap:14px}label{display:grid;gap:6px;font-size:13px}input,textarea,select,button{font:inherit;padding:10px;border:1px solid #ccc;border-radius:6px;max-width:100%;min-width:0}textarea{min-height:110px}button{cursor:pointer;background:white}button[type=submit]{background:#28644e;color:white;border:0}.row{display:grid;grid-template-columns:1fr 1fr;gap:12px}article{padding:16px 0;border-bottom:1px solid #ddd}article h3{margin:0 0 8px;overflow-wrap:anywhere}small{color:#60645f}#preview{max-width:100%;max-height:180px;object-fit:contain}#status{min-height:24px}h2{font-size:18px}a{color:#28644e}@media(max-width:650px){main{grid-template-columns:1fr;padding:16px}.row{grid-template-columns:1fr}}
+</style>
+<header><h1>Éditeur de tendances</h1></header><main>
+<section><h2 id="form-title">Nouvelle tendance</h2><form id="form">
+<input name="id" type="hidden"><label>Nom<input name="title" required maxlength="200"></label>
+<label>Principe et mise en scène<textarea name="description"></textarea></label>
+<label>Lien de référence ou de la vidéo<input name="source" type="url"></label>
+<label>Visuel<input id="image" type="file" accept="image/png,image/jpeg,image/webp"></label><img id="preview" hidden alt="Visuel de la tendance"><button type="button" id="remove-image">Retirer le visuel</button>
+<div class="row"><label>Plateforme<select name="platform"><option>Instagram et TikTok</option><option>Instagram</option><option>TikTok</option><option>Autre</option></select></label><label>Difficulté<select name="difficulty"><option>Facile</option><option>Moyenne</option><option>Avancée</option></select></label></div>
+<div class="row"><label>Temps de réalisation<input name="duration" placeholder="20 minutes"></label><label>Date de repérage<input name="date" type="date"></label></div>
+<div class="row"><label>Flammes<select name="flames"><option value="0">Aucune</option><option value="1">1</option><option value="2">2</option><option value="3">3</option></select></label><label>Statut<select name="status"><option value="draft">Brouillon</option><option value="published">Publiée</option><option value="archived">Archivée</option></select></label></div>
+<div class="row"><button type="submit">Enregistrer</button><button type="button" id="new">Nouvelle tendance</button></div><p id="status" role="status"></p>
+</form></section><section><h2>Bibliothèque commune</h2><label>Afficher<select id="filter"><option value="">Tout</option><option value="draft">Brouillons</option><option value="published">Publiées</option><option value="archived">Archivées</option></select></label><div id="list"></div></section>
+</main><script>
+const form=document.getElementById('form'),statusText=document.getElementById('status');let items=[],image='';
+const labels={draft:'Brouillon',published:'Publiée',archived:'Archivée'};
+function preview(){const p=document.getElementById('preview');p.hidden=!image;p.src=image||''}
+function reset(){form.reset();form.elements.id.value='';image='';preview();document.getElementById('form-title').textContent='Nouvelle tendance'}
+document.getElementById('new').onclick=reset;
+document.getElementById('remove-image').onclick=()=>{image='';preview()};
+document.getElementById('image').onchange=async e=>{const file=e.target.files[0];if(!file)return;if(file.size>2500000){statusText.textContent='Choisis une image de moins de 2,5 Mo.';return}const reader=new FileReader();reader.onload=()=>{image=reader.result;preview()};reader.readAsDataURL(file)};
+function render(){const list=document.getElementById('list');list.replaceChildren();const selected=document.getElementById('filter').value;for(const item of items.filter(t=>!selected||t.status===selected)){const a=document.createElement('article'),h=document.createElement('h3'),s=document.createElement('p'),b=document.createElement('button');h.textContent=item.title;s.textContent=labels[item.status]+' · '+item.platform;b.textContent='Modifier';b.onclick=()=>{for(const [key,value]of Object.entries(item))if(form.elements.namedItem(key)&&key!=='image')form.elements.namedItem(key).value=value;image=item.image;preview();document.getElementById('form-title').textContent='Modifier la tendance';window.scrollTo({top:0,behavior:'smooth'})};a.append(h,s,b);list.append(a)}if(!list.children.length)list.textContent='Aucune tendance.'}
+async function load(){try{const r=await fetch('/api/editor/trends');if(!r.ok)throw Error();items=(await r.json()).items;render()}catch{statusText.textContent='Impossible de charger la bibliothèque.'}}
+document.getElementById('filter').onchange=render;
+form.onsubmit=async e=>{e.preventDefault();const b=form.querySelector('[type=submit]');b.disabled=true;statusText.textContent='Enregistrement…';try{const r=await fetch('/api/editor/trends',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({...Object.fromEntries(new FormData(form)),image})});const data=await r.json();if(!r.ok)throw Error(data.error);form.elements.id.value=data.item.id;await load();statusText.textContent=data.item.status==='published'?'Publiée dans les tableaux de bord.':'Enregistrée.'}catch(err){statusText.textContent=err.message||'Enregistrement impossible.'}finally{b.disabled=false}};load();
+</script></html>
