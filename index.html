@@ -548,7 +548,7 @@ function iso(d){return d.toISOString().slice(0,10)}
 function client(){
   const c=state.clients.find(c=>c.id===currentClient)||state.clients[0]||defaults().clients[0];
   const agency=String(c.name).toLowerCase().replace(/[^a-z]/g,'');
-  if(['lagence','lahgence'].includes(agency)&&window.AGENCY_LOGOS)return {...c,logo:c.logo||window.AGENCY_LOGOS.purple,creationLogo:window.AGENCY_LOGOS.white};
+  if(['lagence','lahgence'].includes(agency)&&window.AGENCY_LOGOS){c.logo=c.logo||window.AGENCY_LOGOS.purple;Object.defineProperty(c,'creationLogo',{value:window.AGENCY_LOGOS.white,configurable:true,enumerable:false});}
   return c;
 }
 function safe(v){return String(v||'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]))}
