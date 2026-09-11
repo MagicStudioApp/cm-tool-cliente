@@ -547,6 +547,30 @@ function iso(d){return d.toISOString().slice(0,10)}
 function client(){return state.clients.find(c=>c.id===currentClient)||state.clients[0]||defaults().clients[0]}
 function safe(v){return String(v||'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]))}
 
+const staticHosting=location.hostname.endsWith('.github.io');
+const newsCache=new Map();
+async function fetchClientNews(query){
+  const cached=newsCache.get(query);
+  if(cached&&Date.now()-cached.time<1800000)return cached.data;
+  let data;
+  if(!staticHosting){
+    const response=await fetch('/api/news?q='+encodeURIComponent(query),{signal:AbortSignal.timeout(20000)});
+    if(!response.ok)throw Error('news unavailable');
+    data=await response.json();
+  }else{
+    const rss='https://news.google.com/rss/search?'+new URLSearchParams({q:query+' when:14d',hl:'fr',gl:'FR',ceid:'FR:fr'});
+    const response=await fetch('https://api.rss2json.com/v1/api.json?rss_url='+encodeURIComponent(rss),{signal:AbortSignal.timeout(20000)});
+    if(!response.ok)throw Error('news unavailable');
+    const feed=await response.json();
+    if(feed.status!=='ok'||!Array.isArray(feed.items))throw Error('invalid feed');
+    const now=Date.now();
+    data={items:feed.items.map(item=>{
+      const title=String(item.title||''),split=title.lastIndexOf(' - ');
+      return {title:split>0?title.slice(0,split):title,source:split>0?title.slice(split+3):'Google Actualités',url:item.link,date:String(item.pubDate||'').replace(' ','T')+'Z'};
+    }).filter(item=>/^https:\/\//.test(item.url)&&Number.isFinite(Date.parse(item.date))&&Date.parse(item.date)>=now-14*86400000&&Date.parse(item.date)<=now+3600000).slice(0,8)};
+  }
+  newsCache.set(query,{time:Date.now(),data});return data;
+}
 let newsRequest=0;
 let lastNewsDay='';
 const newsDay=()=>new Date().toLocaleDateString('sv-SE');
@@ -564,9 +588,7 @@ async function renderLiveNews(){
   root.innerHTML='';currentNews=[];
   status.textContent='Recherche des actualités récentes…';
   try{
-    const response=await fetch('/api/news?q='+encodeURIComponent(query));
-    if(!response.ok)throw new Error('news unavailable');
-    const data=await response.json();
+    const data=await fetchClientNews(query);
     if(request!==newsRequest)return;
     lastNewsDay=newsDay();
     currentNews=data.items||[];
@@ -574,7 +596,7 @@ async function renderLiveNews(){
       const theme=newsTheme(n.title);
       return `<a class="news-chip" href="${safe(n.url)}" target="_blank" rel="noopener noreferrer">${picto(newsPicto(n.title),index+1)}<strong class="news-theme">${safe(theme)}</strong><span class="news-description">${safe(n.title)}</span><small>${safe(n.source)} · ${new Date(n.date).toLocaleDateString('fr-FR')}</small></a>`;
     }).join('');
-    status.textContent=currentNews.length?'Google Actualités · Articles des 14 derniers jours':'Aucun article récent trouvé pour cette entreprise. Complète ses mots-clés dans Entreprises.';
+    status.textContent=currentNews.length?'Google Actualités'+(staticHosting?' · via RSS2JSON':'')+' · Articles des 14 derniers jours':'Aucun article récent trouvé pour cette entreprise. Complète ses mots-clés dans Entreprises.';
   }catch(error){
     if(request===newsRequest)status.textContent='Actualités indisponibles pour le moment. Une nouvelle tentative sera faite automatiquement.';
   }
@@ -630,11 +652,18 @@ function renderDashboard(){
   document.getElementById('todo-list').innerHTML=state.todos.map((t,i)=>`<label class="todo-line"><input type="checkbox" ${t.done?'checked':''} onchange="state.todos[${i}].done=this.checked;save()"><span contenteditable oninput="state.todos[${i}].text=this.textContent;save()">${safe(t.text)}</span></label>`).join('');
 }
 function addTodo(){state.todos.push({text:'to do',done:false});renderDashboard();save()}
+const exampleTrends=[
+  {title:'Faire apparaître un élément',description:'Musique : J-FR - _Tokya23',platform:'TikTok · Instagram',difficulty:'Moyen',duration:'15 sec',image:'https://chatgpt-lang.github.io/cm-tool/assets/trend-faire-apparaitre.png'},
+  {title:'Stop et Zoom',description:"Musique : omelegg - audio d’origine",platform:'TikTok · Instagram',difficulty:'Difficile',duration:'20 sec',image:'https://chatgpt-lang.github.io/cm-tool/assets/trend-kimchi.jpg'},
+  {title:'Moi avec… Moi sans…',description:'Musique : Want Some More - Nicki Minaj',platform:'TikTok · Instagram',difficulty:'Facile',duration:'10 sec',image:'https://chatgpt-lang.github.io/cm-tool/assets/trend-moi-avec-sans.png'}
+];
 async function renderSharedTrends(){
   const root=document.getElementById('trends');
   try{
-    const response=await fetch('/api/trends');if(!response.ok)throw Error();
-    const {items}=await response.json();root.replaceChildren();
+    let items=exampleTrends;
+    if(!staticHosting){const response=await fetch('/api/trends');if(!response.ok)throw Error();const data=await response.json();items=data.items?.length?data.items:exampleTrends;}
+    root.replaceChildren();
+    if(items===exampleTrends){const note=document.createElement('p');note.textContent='Exemples de l’ancien outil';root.append(note);}
     if(!items.length){root.textContent='Aucune tendance publiée pour le moment.';return}
     items.forEach((t,i)=>{
       const card=document.createElement('article');card.className='trend-card';
