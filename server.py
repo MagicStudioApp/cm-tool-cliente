@@ -134,9 +134,9 @@ class Handler(SimpleHTTPRequestHandler):
         if self.path not in ('/api/editor/trends', '/api/ideas', '/api/analysis-import'):
             return self.send_json({'error': 'Introuvable'}, 404)
         # Local editor only: reject cross-origin writes. Hosted accounts need authentication.
-        if self.headers.get('Origin') not in ('http://localhost:8127', 'http://127.0.0.1:8127'):
+        if not getattr(self, 'hosted_authorized', False) and self.headers.get('Origin') not in ('http://localhost:8127', 'http://127.0.0.1:8127'):
             return self.send_json({'error': 'Origine non autorisée'}, 403)
-        if self.headers.get('Host') not in ('localhost:8127', '127.0.0.1:8127'):
+        if not getattr(self, 'hosted_authorized', False) and self.headers.get('Host') not in ('localhost:8127', '127.0.0.1:8127'):
             return self.send_json({'error': 'Hôte non autorisé'}, 403)
         if self.path == '/api/analysis-import':
             if not IDEAS_LOCK.acquire(blocking=False):
@@ -159,6 +159,9 @@ class Handler(SimpleHTTPRequestHandler):
                         raise ValueError('Réponse IA non valide.')
                     proposals = validate_proposals(items, fields, sources)
                     mode = 'ai'
+                    if not proposals:
+                        proposals = local_proposals(fields, sources)
+                        mode = 'local'
                 except Exception:
                     proposals = local_proposals(fields, sources)
                     mode = 'local'
