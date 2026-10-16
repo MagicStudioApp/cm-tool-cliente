@@ -55,3 +55,7 @@
 #creation-studio .cs-layer[aria-pressed=true]{background:var(--soft-2);font-weight:700}
 #creation-studio .cs-hint{text-align:center;font-size:12px;color:var(--muted);margin:14px 0 0}
 @media(max-width:900px){#creation-studio .cs-layout{display:flex;flex-direction:column}#creation-studio .cs-stage-area{order:-1;width:100%}#creation-studio .cs-sidebar{width:100%}#creation-studio .cs-banner{padding:14px;border-radius:16px}#creation-studio .cs-banner-logo{width:84px;height:52px}#creation-studio .cs-save{display:none}#creation-studio .cs-workshop{flex-basis:140px;min-height:120px}}
+#creation-studio .cs-canvas-holder{position:relative}
+#creation-studio .cs-canvas-holder canvas{cursor:crosshair}
+#creation-studio .cs-inline-text{position:absolute;z-index:3;box-sizing:border-box;padding:4px;border:2px solid #4a6cf7;border-radius:6px;background:rgba(255,255,255,.94);color:#18232c;font-family:Arial,"Apple Color Emoji",sans-serif;line-height:1.25;resize:none;overflow:hidden;outline:none;transform-origin:center;box-shadow:0 8px 24px #0002}
+#creation-studio .cs-tip{font-size:11px;margin-top:12px}
