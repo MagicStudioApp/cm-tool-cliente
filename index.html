@@ -422,7 +422,30 @@
     .asset-tile:hover .asset-remove,.asset-remove:focus-visible{opacity:1}
     .library-empty{color:var(--muted);font-size:13px;margin:0}
 
+    /* Fixes: to-do delete, planning navigation, brand header actions, PDF export of the report. */
+    .todo-line span{flex:1}
+    .todo-remove{border:0;background:transparent;color:var(--muted);font-size:20px;line-height:1;padding:0 4px;opacity:.45;cursor:pointer}
+    .todo-line:hover .todo-remove,.todo-remove:focus-visible{opacity:1}
+    .planner-nav{display:flex;justify-content:center;gap:6px;margin:-8px 0 16px}
+    .quiet-nav{border:1px solid var(--card-line);background:var(--paper);border-radius:999px;padding:7px 14px;font-weight:800;color:var(--ink);min-width:40px}
+    .quiet-nav:hover{background:var(--soft-1)}
+    .brand-hero-logo{position:relative;cursor:pointer}
+    .brand-logo-edit{position:absolute;inset:auto 6px 6px;font-size:10px;font-weight:800;text-align:center;background:color-mix(in srgb,var(--paper) 88%,transparent);border-radius:8px;padding:3px;opacity:0;transition:opacity .15s}
+    .brand-hero-logo:hover .brand-logo-edit,.brand-hero-logo:focus-within .brand-logo-edit{opacity:1}
+    .brand-hero-text{flex:1;min-width:0}
+    .brand-hero h1[contenteditable]{outline:none;border-radius:8px;padding:0 4px;margin-left:-4px}
+    .brand-hero h1[contenteditable]:hover,.brand-hero h1[contenteditable]:focus{background:color-mix(in srgb,var(--paper) 70%,transparent)}
+    .brand-delete{font-size:13px;color:#a32020;align-self:flex-start}
+    @media print{
+      body.print-report *{visibility:hidden}
+      body.print-report #analysis-report,body.print-report #analysis-report *{visibility:visible}
+      body.print-report #analysis-report{position:absolute;left:0;top:0;width:100%;display:block}
+      body.print-report .report-slide{width:100%!important;box-shadow:none;border-radius:0;margin:0;break-after:page;page-break-after:always}
+      body.print-report .report-editable:focus{box-shadow:none;background:none}
+      @page{size:A4 landscape;margin:0}
+    }
     @media(max-width:899px){
+      .brand-hero{flex-wrap:wrap}
       .brand-picker-btn{min-width:0;padding:6px 10px 6px 6px}
       .brand-picker-text small{display:none}
       .brand-picker-text strong{max-width:120px;font-size:13px}
@@ -475,6 +498,7 @@
     <section class="page" id="page-planning">
       <div class="hero-title"><h1>Planning</h1><p id="planning-title">Semaine du 1 septembre</p></div>
       <div class="planner-tabs"><button class="tab active" onclick="setPlanningView('day')">Jour</button><button class="tab" onclick="setPlanningView('week')">Semaine</button><button class="tab" onclick="setPlanningView('month')">Mois</button></div>
+      <div class="planner-nav"><button type="button" class="quiet-nav" aria-label="Période précédente" onclick="shiftPlanning(-1)">‹</button><button type="button" class="quiet-nav" onclick="shiftPlanning(0)">Aujourd’hui</button><button type="button" class="quiet-nav" aria-label="Période suivante" onclick="shiftPlanning(1)">›</button></div>
       <div class="add-bar">
         <select class="input" id="plan-type"><option>Post</option><option>Story</option><option>Vidéo</option><option>Rdv</option></select>
         <input class="input" id="plan-date" type="date">
@@ -489,7 +513,7 @@
       <div class="analysis-shell">
         <div class="upload-zone"><strong>Captures Instagram</strong><p style="margin:6px 0 0;color:var(--muted)">Ajoutez ici les captures ou chiffres reçus. Le modèle propre reste exportable au centre.</p></div>
         <div class="report-strip" id="analysis-report"></div>
-        <button class="small-btn" style="display:block;margin:0 auto 18px">Exporter</button>
+        <button class="small-btn" style="display:block;margin:0 auto 18px" onclick="exportAnalysis()">Exporter en PDF</button>
         <div class="paper-note"><h3>Mes notes personnelles</h3><textarea id="analysis-note" placeholder="Ce qui ne part pas au client..."></textarea></div>
       </div>
     </section>
@@ -675,7 +699,8 @@ function normalizeState(data){
       keywords:Array.isArray(c.keywords)?c.keywords:[],
       note:typeof c.note==='string'?c.note:'Présentation à compléter...',
       photos:Array.isArray(c.photos)?c.photos:[],
-      assets:Array.isArray(c.assets)?c.assets:[]
+      assets:Array.isArray(c.assets)?c.assets:[],
+      ...(c.report&&typeof c.report==='object'?{report:c.report}:{})
     };
   });
   if(!next.clients.some(c=>c.id===next.currentClient))next.currentClient=next.clients[0].id;
@@ -691,7 +716,7 @@ function normalizeState(data){
 }
 function load(){try{return normalizeState(JSON.parse(localStorage.getItem(STORE)))}catch(e){return defaults()}}
 function save(){state.currentClient=currentClient;localStorage.setItem(STORE,JSON.stringify(state))}
-function iso(d){return d.toISOString().slice(0,10)}
+function iso(d){return d.toLocaleDateString('sv-SE')}
 function client(){
   const c=state.clients.find(c=>c.id===currentClient)||state.clients[0]||defaults().clients[0];
   const agency=String(c.name).toLowerCase().replace(/[^a-z]/g,'');
@@ -838,8 +863,9 @@ function renderDashboard(){
   document.querySelector('.idea-config')?.remove();
   document.getElementById('personal-note').value=state.notes.personal||'';
   document.getElementById('personal-note').oninput=e=>{state.notes.personal=e.target.value;save()};
-  document.getElementById('todo-list').innerHTML=state.todos.map((t,i)=>`<label class="todo-line"><input type="checkbox" ${t.done?'checked':''} onchange="state.todos[${i}].done=this.checked;save()"><span contenteditable oninput="state.todos[${i}].text=this.textContent;save()">${safe(t.text)}</span></label>`).join('');
+  document.getElementById('todo-list').innerHTML=state.todos.map((t,i)=>`<label class="todo-line"><input type="checkbox" ${t.done?'checked':''} onchange="state.todos[${i}].done=this.checked;save()"><span contenteditable oninput="state.todos[${i}].text=this.textContent;save()">${safe(t.text)}</span><button type="button" class="todo-remove" aria-label="Supprimer la tâche" onclick="removeTodo(${i})">×</button></label>`).join('');
 }
+function removeTodo(i){state.todos.splice(i,1);renderDashboard();save()}
 function addTodo(){state.todos.push({text:'to do',done:false});renderDashboard();save()}
 const exampleTrends=[
   {title:'Faire apparaître un élément',description:'Musique : J-FR - _Tokya23',platform:'TikTok · Instagram',difficulty:'Moyen',duration:'15 sec',image:'https://chatgpt-lang.github.io/cm-tool/assets/trend-faire-apparaitre.png'},
@@ -852,7 +878,7 @@ async function renderSharedTrends(){
     let items=exampleTrends;
     if(!staticHosting){const response=await fetch('/api/trends');if(!response.ok)throw Error();const data=await response.json();items=data.items?.length?data.items:exampleTrends;}
     root.replaceChildren();
-    if(items===exampleTrends){const note=document.createElement('p');note.textContent='Exemples de l’ancien outil';root.append(note);}
+    if(items===exampleTrends){const note=document.createElement('p');note.textContent='Exemples de tendances';root.append(note);}
     if(!items.length){root.textContent='Aucune tendance publiée pour le moment.';return}
     items.forEach((t,i)=>{
       const card=document.createElement('article');card.className='trend-card';
@@ -905,7 +931,7 @@ async function generateIdeas(){
       colors:c.colors,
       fonts:c.fonts
     },
-    existingPlanning:state.plans.slice(-20),
+    existingPlanning:state.plans.filter(p=>p.clientId===c.id).slice(-20),
     news:currentNews.filter(n=>!n.brand||n.brand.id===currentClient).map(n=>`${n.title} (${n.source}, ${n.date}) ${n.url}`)
   };
   payload.prompt=buildIdeasPrompt(payload);
@@ -932,10 +958,10 @@ async function generateIdeas(){
 }
 async function fetchIdeasFromServer(payload){
   const res=await cmApiFetch('/api/ideas',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
-  if(!res.ok)throw new Error('ideas webhook failed');
+  if(!res.ok)throw new Error(res.status===401?'Code d’accès incorrect.':'Le service d’idées ne répond pas pour le moment.');
   const data=await res.json();
   const ideas=Array.isArray(data)?data:data.ideas;
-  if(!Array.isArray(ideas))throw new Error('bad ideas response');
+  if(!Array.isArray(ideas))throw new Error('Le service d’idées a renvoyé une réponse inattendue.');
   return ideas;
 }
 function buildLocalIdeas(payload){
@@ -983,6 +1009,7 @@ function addIdeaToPlanning(id){
   openContentSheet(null,{type:idea.type||'Post',title:idea.title,brief:idea.angle||'',hook:idea.hook||''});
 }
 
+function shiftPlanning(step){const input=document.getElementById('plan-date');const d=step?new Date((input.value||iso(new Date()))+'T12:00:00'):new Date();if(step){if(planningView==='day')d.setDate(d.getDate()+step);else if(planningView==='week')d.setDate(d.getDate()+7*step);else{d.setDate(1);d.setMonth(d.getMonth()+step)}}input.value=iso(d);renderPlanning()}
 function setPlanningView(v){planningView=v;document.querySelectorAll('.tab').forEach((b,i)=>b.classList.toggle('active',['day','week','month'][i]===v));renderPlanning()}
 function addPlanItem(){
   const type=document.getElementById('plan-type').value,date=document.getElementById('plan-date').value||iso(today),title=document.getElementById('plan-title-input').value||'Nouveau contenu';
@@ -1007,9 +1034,19 @@ function renderPlanning(){
 function planBrand(p){if(viewIds().length<2)return '';const b=brandById(p.clientId);return b?`<span class="plan-brand">${brandChip(b)}${safe(b.name)}</span>`:''}
 function itemHtml(p){if(p.type==='Rdv')return `<button type="button" class="plan-item rdv-postit" data-format="Rdv" data-content-id="${safe(p.id)}">${planBrand(p)}<span class="rdv-postit-title"><span aria-hidden="true">📌</span> ${safe(p.time||p.heure||'')}${p.time||p.heure?' · ':''}${safe(p.title)}</span><span class="rdv-postit-client">${safe(state.clients.find(c=>c.id===p.clientId)?.name||'')}</span><span class="rdv-postit-hint">Voir la fiche</span></button>`;return `<button type="button" class="plan-item" data-format="${safe(p.type)}" style="width:100%;text-align:left;border:0;cursor:pointer" data-content-id="${safe(p.id)}">${planBrand(p)}${safe(p.title)}<div style="font-size:11px;font-weight:600;opacity:.9">Voir la fiche</div></button>`}
 
+function blankReport(c){
+  const blank=(label)=>({value:'—',label,text:'À compléter.'});
+  return {period:'Mois à compléter',range:'Période à compléter',subscribersTitle:'Abonnés',engagementTitle:'Engagement',postTitle:'Publications les plus performantes',conclusionTitle:'Lecture & recommandations',intro:'BILAN RS '+String(c.initials||c.name).toUpperCase(),tag:'RÉSEAUX SOCIAUX',
+    subscribers:['Instagram','Facebook','YouTube','LinkedIn'].map(blank),
+    engagement:['vues Instagram','vues Facebook','vues YouTube','impressions LinkedIn'].map(label=>({value:'—',label,items:'À compléter'})),
+    posts:[1,2,3].map(i=>({views:'— vues',gain:'',name:`Publication ${i} à compléter`,stats:'À compléter'})),
+    conclusion:'À compléter : ce qui a bien marché ce mois-ci et les priorités du mois prochain.'};
+}
+// Each brand has its own report; the original demo figures stay with the Observatoire only.
+function reportFor(c){if(!c.report)c.report=c.id==='observatoire'?JSON.parse(JSON.stringify(state.report)):blankReport(c);return c.report}
 function renderAnalysis(){
   const c=client();
-  const r=state.report;
+  const r=reportFor(c);
   const report=document.getElementById('analysis-report');
   report.innerHTML=`
     <article class="report-slide">
@@ -1083,6 +1120,7 @@ function renderAnalysis(){
   document.getElementById('analysis-note').value=state.notes.analysis||'';
   document.getElementById('analysis-note').oninput=e=>{state.notes.analysis=e.target.value;save()};
 }
+function exportAnalysis(){document.querySelectorAll('.ae-selected,.ae-page-selected').forEach(n=>n.classList.remove('ae-selected','ae-page-selected'));document.body.classList.add('print-report');const done=()=>{document.body.classList.remove('print-report');window.removeEventListener('afterprint',done)};window.addEventListener('afterprint',done);window.print();done()}
 function highlightGrowth(text){
   return safe(text).replace(/([+][0-9,.]+ ?%?|[0-9]+ nouveaux abonnés)/g,'<span class="green">$1</span>');
 }
@@ -1091,8 +1129,8 @@ function cleanEditable(el){
 }
 function saveReportEdit(e){
   const el=e.currentTarget;
-  if(el.dataset.report)state.report[el.dataset.report]=cleanEditable(el);
-  if(el.dataset.array)state.report[el.dataset.array][Number(el.dataset.index)][el.dataset.key]=cleanEditable(el);
+  if(el.dataset.report)reportFor(client())[el.dataset.report]=cleanEditable(el);
+  if(el.dataset.array)reportFor(client())[el.dataset.array][Number(el.dataset.index)][el.dataset.key]=cleanEditable(el);
   save();
 }
 
@@ -1136,6 +1174,21 @@ function libraryGroup(c,cat){
   const body=items.length?`<div class="library-grid">${items.map(assetTile).join('')}</div>`:`<p class="library-empty">${loading?'Chargement de la bibliothèque…':`Aucun visuel dans « ${safe(cat)} » pour l’instant. Ajoute-les avec « + Ajouter un asset ».`}</p>`;
   return `<div class="library-group"><h3>${safe(cat)} <span>${items.length||''}</span></h3>${body}</div>`;
 }
+function renameBrand(el){const c=client(),name=el.textContent.replace(/\s+/g,' ').trim().slice(0,80);if(!name||name===c.name){el.textContent=c.name;return}c.name=name;c.initials=brandInitials(name);save();render()}
+async function changeBrandLogo(file){if(!file||!file.type.startsWith('image/'))return;const src=await shrinkImage(file,800);if(!src)return;const c=client(),before=c.logo;c.logo=src;try{save()}catch(e){c.logo=before;alert('Stockage du navigateur plein : utilise une image plus légère.');return}render()}
+function deleteBrand(){
+  const c=client();
+  if(state.clients.length<2){alert('Garde au moins une marque dans l’outil.');return}
+  if(!confirm(`Supprimer « ${c.name} » et tout son contenu (planning, idées, rapport, ateliers) ? Cette action est définitive.`))return;
+  state.clients=state.clients.filter(x=>x.id!==c.id);
+  state.plans=state.plans.filter(p=>p.clientId!==c.id);
+  state.ideas=(state.ideas||[]).filter(i=>i.clientId!==c.id);
+  state.viewClients=(state.viewClients||[]).filter(id=>id!==c.id);
+  currentClient=state.clients[0].id;
+  // Workshop designs and edited reports live in IndexedDB, keyed by brand.
+  for(const [name,store] of [['cm-creation-studio','clients'],['cm-analysis-editor','reports']]){try{const r=indexedDB.open(name,1);r.onsuccess=()=>{try{r.result.transaction(store,'readwrite').objectStore(store).delete(c.id)}catch(e){}}}catch(e){}}
+  save();render();
+}
 function setLibraryTab(tab){libraryTab=tab;renderCompany()}
 function renderCompany(){
   const c=client();
@@ -1144,7 +1197,7 @@ function renderCompany(){
   const preview=(c.note||'Présentation à compléter...').split('\n').filter(Boolean).slice(0,2).join('\n');
   const tabs=[...LIBRARY_CATEGORIES,'Tout'];
   layout.innerHTML=`
-    <header class="brand-hero"><div class="brand-hero-logo">${logoHtml}</div><div><span class="hero-eyebrow">Fiche entreprise</span><h1>${safe(c.name||'Client')}</h1></div></header>
+    <header class="brand-hero"><label class="brand-hero-logo" title="Changer le logo">${logoHtml}<input type="file" accept="image/*" hidden onchange="changeBrandLogo(this.files[0]);this.value=''"><span class="brand-logo-edit">Changer le logo</span></label><div class="brand-hero-text"><span class="hero-eyebrow">Fiche entreprise</span><h1 contenteditable="plaintext-only" spellcheck="false" aria-label="Nom de la marque" title="Cliquer pour renommer" onkeydown="if(event.key==='Enter'){event.preventDefault();this.blur()}" onblur="renameBrand(this)">${safe(c.name||'Client')}</h1></div><button type="button" class="quiet-add brand-delete" onclick="deleteBrand()">Supprimer la marque</button></header>
     <div class="brand-identity">
       <section class="card"><h2>Couleurs</h2><div class="swatches">${c.colors.map((col,i)=>`<button type="button" class="swatch" style="background:${safe(col)}" aria-label="Couleur ${i+1} de l’entreprise" onclick="openPaletteColor(${i})"></button>`).join('')}</div></section>
       <section class="card keyword-card"><h2>Mots-clés</h2><div class="keyword-list">${c.keywords.map(k=>`<span>#${safe(k)}</span>`).join('')}<button type="button" class="keyword-add" aria-label="Ajouter un mot-clé" onclick="openKeywordInput(this)">+</button></div></section>
@@ -1219,6 +1272,7 @@ function readFile(file){
     reader.readAsDataURL(file);
   });
 }
+function brandInitials(name){const all=String(name).replace(/[’']/g,' ').split(/\s+/).filter(Boolean),long=all.filter(w=>w.length>2),words=long.length>1?long:all;return ((words.length>1?words[0][0]+words[1][0]:String(name).trim().slice(0,2))||'?').toUpperCase()}
 async function saveClientFromModal(){
   const name=document.getElementById('client-name-field').value.trim();
   const text=document.getElementById('client-text-field').value.trim();
@@ -1230,7 +1284,7 @@ async function saveClientFromModal(){
   state.clients.push({
     id,
     name:finalName,
-    initials:finalName.slice(0,2).toUpperCase(),
+    initials:brandInitials(finalName),
     logo,
     colors:[
       document.getElementById('client-color-1').value,
@@ -1238,7 +1292,7 @@ async function saveClientFromModal(){
       document.getElementById('client-color-3').value
     ],
     fonts:['DM Sans'],
-    keywords:['MOT CLE'],
+    keywords:[],
     note:text||'Présentation à compléter...',
     photos:photos.filter(Boolean)
   });
@@ -1330,13 +1384,14 @@ function openContentSheet(id,seed={}){
     ${field('brief','Brief','textarea')}
     <div data-formats="Post Vidéo">${select('style','Style',['','Slow & esthétique','Dynamique & rapide','Tutoriel','Lifestyle','Humour','Émotion'])}</div>
     <div data-formats="Rdv">${field('participants','Participants')}${field('location','Lieu ou lien de réunion')}${field('agenda','Ordre du jour','textarea')}</div>
-    </div><p role="alert" class="content-error"></p><footer><button type="button" class="small-btn content-cancel">Annuler</button><button type="submit" class="small-btn">Enregistrer</button></footer></form>`;
+    </div><p role="alert" class="content-error"></p><footer>${existing?'<button type="button" class="quiet-add content-delete">Supprimer</button>':''}<button type="button" class="small-btn content-cancel">Annuler</button><button type="submit" class="small-btn">Enregistrer</button></footer></form>`;
   document.body.append(dialog);
   const form=dialog.querySelector('form');
   const update=()=>{dialog.querySelectorAll('[data-formats]').forEach(el=>el.hidden=!el.dataset.formats.split(' ').includes(form.elements.type.value))};
   form.elements.type.onchange=update;update();
   const close=()=>dialog.close();
   dialog.querySelector('.modal-close').onclick=close;dialog.querySelector('.content-cancel').onclick=close;
+  const del=dialog.querySelector('.content-delete');if(del)del.onclick=()=>{if(deletePlan(existing.id))close()};
   dialog.addEventListener('close',()=>{dialog.remove();contentReturnFocus?.focus()});
   form.onsubmit=e=>{
     e.preventDefault();const values=Object.fromEntries(new FormData(form));
@@ -1352,6 +1407,7 @@ function openContentSheet(id,seed={}){
 }
 const editContentBrief=openContentSheet;
 openContentSheet=function(id,seed={}){if(id){showLegacySheet(id)}else{editContentBrief(null,seed)}};
+function deletePlan(id){const p=state.plans.find(p=>p.id===id);if(!p||!confirm(`Supprimer « ${p.title} » du planning ?`))return false;state.plans=state.plans.filter(x=>x.id!==id);save();render();return true}
 function showLegacySheet(id){
   const p=state.plans.find(p=>p.id===id&&p.clientId===currentClient);if(!p)return;
   if(p.type==='Rdv'){editContentBrief(id);return}
@@ -1366,7 +1422,7 @@ function showLegacySheet(id){
     <div class="legacy-grid">${block('music','Musique','music')}${block('caption','Légende','caption')}${block('template','CapCut','capcut')}${block('story','Phrase Story','story')}</div>
     ${['thumbnail','rhythm','notes'].map((key,i)=>`<div class="legacy-full"><label>${['Miniature','Rythme','Note'][i]}<textarea name="${key}" rows="2">${safe(p[key]||'')}</textarea></label></div>`).join('')}
     ${p.pdfUrl?'<button type="button" class="small-btn" data-pdf>Voir la fiche PDF</button>':''}<p role="status" data-message></p>
-    <footer><button type="button" class="small-btn" data-brief>Modifier le brief</button><button class="small-btn" type="submit">Enregistrer</button></footer></form>`;
+    <footer><button type="button" class="quiet-add" data-delete>Supprimer</button><button type="button" class="small-btn" data-brief>Modifier le brief</button><button class="small-btn" type="submit">Enregistrer</button></footer></form>`;
   document.body.append(dialog);
   const form=dialog.querySelector('form');
   const progress=()=>{
@@ -1385,6 +1441,7 @@ function showLegacySheet(id){
   const openLink=url=>{try{const parsed=new URL(url);if(!['https:','http:'].includes(parsed.protocol))throw Error();window.open(parsed.href,'_blank','noopener,noreferrer')}catch(e){message.textContent='Ajoute un lien http ou https valide.'}};
   dialog.querySelector('[data-link]').onclick=()=>openLink(form.elements.template.value);
   if(p.pdfUrl)dialog.querySelector('[data-pdf]').onclick=()=>openLink(p.pdfUrl);
+  dialog.querySelector('[data-delete]').onclick=()=>{if(deletePlan(id))dialog.close()};
   dialog.querySelector('[data-brief]').onclick=()=>{if(persist()){dialog.close();editContentBrief(id)}};
   dialog.querySelector('[data-back]').onclick=()=>dialog.close();dialog.querySelector('.modal-close').onclick=()=>dialog.close();dialog.onclose=()=>dialog.remove();dialog.showModal();
 }
