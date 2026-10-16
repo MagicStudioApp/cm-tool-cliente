@@ -320,23 +320,150 @@
     .ae-selected{outline:2px dashed #2685cb!important;outline-offset:3px}.ae-page-selected{box-shadow:0 0 0 2px #2685cb,0 18px 42px #0002}
     @media(max-width:800px){.analysis-shell{padding-left:0}#analysis-tools{float:none;margin:0 0 18px;width:100%;position:relative;top:0;grid-template-columns:repeat(3,minmax(0,1fr))}#analysis-tools p{grid-column:1/-1}}
     .analysis-import{max-width:760px}.analysis-import>p{line-height:1.5;font-size:14px}.import-drop{display:block;border:1px dashed var(--accent);border-radius:12px;padding:20px;margin:16px 0}.import-drop input{display:block;margin-top:10px;max-width:100%}.import-previews{display:flex;gap:10px;overflow:auto;margin:12px 0}.import-previews img{height:140px;max-width:150px;object-fit:contain}.import-notice{color:var(--muted);font-size:12px!important}.import-row{display:grid;grid-template-columns:24px 1fr;gap:8px;padding:16px 0;border-top:1px solid var(--line)}.import-row textarea,.import-row p,.import-row small{grid-column:2}.import-row textarea{font:inherit;padding:8px;min-height:50px;border:1px solid var(--line);border-radius:8px;resize:vertical}.import-row p{font-size:12px;margin:0}.import-review pre{white-space:pre-wrap;font:12px 'DM Sans';max-height:240px;overflow:auto}
+
+    /* Studio layout: sidebar on desktop, bottom bar on mobile. Soft tones tinted by the company colors. */
+    :root{--sidebar:236px;--studio-bg:color-mix(in srgb,var(--client-1,#001f3a) 4%,var(--cream));--soft-1:color-mix(in srgb,var(--client-1,#001f3a) 10%,var(--paper));--soft-2:color-mix(in srgb,var(--client-2,#ff8600) 14%,var(--paper));--soft-3:color-mix(in srgb,var(--client-3,#7fb7a3) 20%,var(--paper));--card-line:color-mix(in srgb,var(--ink) 8%,transparent)}
+    body{background:var(--studio-bg)}
+    .sidebar-brand{display:none}
+    .nav-btn svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+    .nav-btn.active{color:var(--ink)}
+    .nav-btn.active svg{stroke:var(--client-2)}
+    .topbar{background:color-mix(in srgb,var(--studio-bg) 88%,transparent);border-bottom:1px solid var(--card-line)}
+    .client-pill.active{outline-color:var(--client-2)}
+    .hero-title{text-align:left;margin:8px 0 26px}
+    .hero-eyebrow{display:block;font-size:11px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin-bottom:8px}
+    .hero-title h1{font-family:"DM Sans",sans-serif;font-weight:800;text-transform:none;letter-spacing:-.02em;line-height:1.05;font-size:clamp(30px,4vw,44px)}
+    .hero-title p{font-size:clamp(22px,3vw,30px);margin:6px 0 0}
+    .card{border:1px solid var(--card-line);box-shadow:0 6px 18px color-mix(in srgb,var(--ink) 5%,transparent)}
+    .card h2,.card h3{font-family:"DM Sans",sans-serif;text-transform:none;letter-spacing:0;text-align:left;font-size:18px;font-weight:800}
+    .card>p{text-align:left}
+    .metric{border-radius:14px;text-align:left;padding:16px}
+    .metric,.news-chip{background:color-mix(in srgb,var(--tile-color) 16%,var(--paper));color:var(--ink);border-top:4px solid var(--tile-color)}
+    .metric strong,.metric span{color:var(--ink)}
+    .news-chip .news-title{color:var(--ink)!important}
+    .news-chip .original-picto{filter:none!important}
+    .tab{border-color:var(--card-line)}
+    .plan-col{border-color:var(--card-line)}
+    #creation-studio{font-family:"DM Sans",sans-serif}
+    #creation-studio .cs-heading h1{font-weight:800;letter-spacing:-.02em}
+    .cs-btn,.cs-field input:not([type=checkbox]),.cs-field select,.cs-field textarea{font-family:"DM Sans",sans-serif}
+
+    @media(min-width:900px){
+      .app{padding-bottom:0;padding-left:var(--sidebar)}
+      .sidebar{position:fixed;inset:0 auto 0 0;width:var(--sidebar);background:var(--soft-1);border-right:1px solid var(--card-line);display:flex;flex-direction:column;padding:22px 14px;z-index:40}
+      .sidebar-brand{display:block;padding:4px 12px 26px}
+      .sidebar-brand strong{display:block;font-size:22px;font-weight:800}
+      .sidebar-brand span{font-size:11px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+      .bottom-nav{position:static;height:auto;background:transparent;border:0;display:flex;flex-direction:column;gap:4px;padding:0}
+      .nav-btn{display:flex;align-items:center;gap:12px;padding:11px 14px;border-radius:12px;font-size:14px;font-weight:700;color:var(--muted);text-align:left}
+      .nav-btn:hover{background:color-mix(in srgb,var(--paper) 70%,transparent);color:var(--ink)}
+      .nav-btn.active{background:var(--paper);box-shadow:0 4px 14px color-mix(in srgb,var(--ink) 6%,transparent)}
+      .topbar .brand strong{display:none}
+      .topbar .brand span{font-size:12px;font-weight:800;text-transform:uppercase}
+      .page{padding:28px clamp(24px,3.5vw,48px) 48px}
+      #page-dashboard .dashboard-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+      #page-dashboard .dashboard-grid>.card:nth-child(2){grid-column:1/-1;order:3}
+    }
+    /* Brand picker */
+    .client-switcher{overflow:visible;max-width:none;padding:0}
+    .brand-picker{position:relative}
+    .brand-picker-btn{display:flex;align-items:center;gap:10px;border:1px solid var(--card-line);background:var(--paper);border-radius:14px;padding:7px 12px 7px 8px;color:var(--ink);text-align:left;min-width:200px;box-shadow:0 4px 14px color-mix(in srgb,var(--ink) 5%,transparent)}
+    .brand-picker-btn svg{width:18px;height:18px;margin-left:auto;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+    .brand-picker-text{display:grid;min-width:0}
+    .brand-picker-text small{font-size:10px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+    .brand-picker-text strong{font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:190px}
+    .brand-chips{display:flex}
+    .brand-chips .brand-chip+.brand-chip{margin-left:-10px}
+    .brand-chip{width:30px;height:30px;border-radius:50%;display:inline-grid;place-items:center;font-size:11px;font-weight:800;flex:0 0 auto;border:2px solid var(--paper)}
+    .brand-menu{position:absolute;right:0;top:calc(100% + 8px);width:min(300px,calc(100vw - 32px));background:var(--paper);border:1px solid var(--card-line);border-radius:16px;padding:10px;box-shadow:0 18px 40px color-mix(in srgb,var(--ink) 16%,transparent);z-index:60}
+    .brand-menu[hidden]{display:none}
+    .brand-menu-hint{font-size:12px;color:var(--muted);margin:4px 8px 8px}
+    .brand-option{display:flex;align-items:center;gap:10px;padding:8px;border-radius:10px;cursor:pointer;font-weight:700;font-size:14px}
+    .brand-option:hover{background:var(--soft-1)}
+    .brand-option input{width:18px;height:18px;accent-color:var(--client-2);margin:0}
+    .brand-menu-add{display:block;width:100%;margin-top:6px;border:0;border-top:1px solid var(--card-line);background:transparent;padding:12px 8px 6px;text-align:left;font-weight:800;color:var(--ink)}
+    .plan-brand,.news-brand{display:flex;align-items:center;gap:6px;font-size:11px;font-weight:800;margin-bottom:4px}
+    .plan-brand .brand-chip,.news-brand .brand-chip{width:20px;height:20px;font-size:8px;border-width:1px}
+    .ideas-brand{display:flex;align-items:center;gap:8px;flex-wrap:wrap;color:var(--ink);font-weight:700}
+    .ideas-brand select{padding:6px 10px}
+
+    /* Brand sheet */
+    .company-layout{display:block;max-width:1180px;margin:0}
+    .brand-hero{display:flex;align-items:center;gap:22px;padding:22px;border-radius:22px;margin-bottom:18px;background:linear-gradient(120deg,var(--soft-1),var(--soft-2) 60%,var(--soft-3))}
+    .brand-hero-logo{width:150px;height:96px;flex:0 0 auto;background:var(--paper);border-radius:16px;display:grid;place-items:center;padding:12px}
+    .brand-hero-logo img{max-width:100%;max-height:100%;object-fit:contain}
+    .brand-hero-logo strong{font-size:40px}
+    .brand-hero h1{margin:0;font-size:clamp(26px,3.4vw,38px);font-weight:800;letter-spacing:-.02em;line-height:1.1}
+    .brand-identity{display:grid;grid-template-columns:minmax(0,.8fr) minmax(0,1fr) minmax(0,1.2fr);gap:14px;margin-bottom:18px}
+    .brand-identity .swatches{justify-content:flex-start;padding:4px 0}
+    .brand-identity .keyword-card{background:var(--paper);color:var(--ink);text-align:left;padding:18px}
+    .brand-identity .keyword-card h2{color:var(--ink)}
+    .brand-identity .keyword-list{justify-content:flex-start}
+    .brand-identity .keyword-list span,.brand-identity .keyword-add{background:var(--soft-2);color:var(--ink)}
+    .brand-identity .company-note-card{background:var(--paper);padding:18px}
+    .brand-identity .company-note-preview{font-family:"DM Sans",sans-serif;font-size:14px;line-height:1.55;max-height:66px}
+    .brand-identity .note-more{box-shadow:none;background:var(--soft-1);color:var(--ink);padding:6px 14px}
+    .library-head{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;padding-bottom:14px;border-bottom:1px solid var(--card-line)}
+    .library-tabs{display:flex;gap:6px;overflow-x:auto;padding:2px}
+    .library-tab{border:1px solid var(--card-line);background:var(--paper);border-radius:999px;padding:8px 14px;font-size:12px;font-weight:800;text-transform:uppercase;letter-spacing:.04em;color:var(--muted);white-space:nowrap}
+    .library-tab.active{background:var(--client-2);border-color:var(--client-2);color:var(--on-client-2)}
+    .library-add{cursor:pointer;white-space:nowrap}
+    .library-add input{display:none}
+    .library-status{font-size:13px;color:#a32020;margin:8px 0 0;min-height:0}
+    .library-group h3{text-align:left;font-size:13px;letter-spacing:.08em;text-transform:uppercase;margin:20px 0 12px}
+    .library-group h3 span{color:var(--muted);font-weight:500}
+    .library-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(118px,1fr));gap:14px}
+    .asset-tile{position:relative;margin:0}
+    .asset-thumb{aspect-ratio:1;border-radius:14px;background:color-mix(in srgb,var(--ink) 4%,var(--paper));display:grid;place-items:center;overflow:hidden;padding:10px;border:1px solid var(--card-line)}
+    .asset-thumb.dark{background:var(--client-1)}
+    .asset-thumb img{max-width:100%;max-height:100%;object-fit:contain}
+    .asset-tile figcaption{font-size:12px;font-weight:700;margin-top:6px;overflow-wrap:anywhere}
+    .asset-remove{position:absolute;top:6px;right:6px;width:26px;height:26px;border-radius:50%;border:0;background:var(--paper);color:var(--ink);box-shadow:0 2px 8px #0002;opacity:0;transition:opacity .15s}
+    .asset-tile:hover .asset-remove,.asset-remove:focus-visible{opacity:1}
+    .library-empty{color:var(--muted);font-size:13px;margin:0}
+
+    @media(max-width:899px){
+      .brand-picker-btn{min-width:0;padding:6px 10px 6px 6px}
+      .brand-picker-text small{display:none}
+      .brand-picker-text strong{max-width:120px;font-size:13px}
+      .brand-identity{grid-template-columns:1fr}
+      .brand-hero{padding:16px;gap:14px}
+      .brand-hero-logo{width:96px;height:64px}
+      .library-grid{grid-template-columns:repeat(auto-fill,minmax(96px,1fr));gap:10px}
+      .asset-remove{opacity:1}
+      .bottom-nav{background:var(--paper);border-top:1px solid var(--card-line)}
+      .nav-btn{font-size:11px}
+      .hero-title{margin-bottom:18px}
+    }
   </style>
-<link rel="stylesheet" href="assets/studio/studio.css">
+<link rel="stylesheet" href="assets/studio/studio.css?v=ateliers-2">
 </head>
 <body>
 <div class="app">
+  <aside class="sidebar">
+    <div class="sidebar-brand"><strong>CM Tool ✦</strong><span>Studio</span></div>
+    <nav class="bottom-nav" aria-label="Navigation principale">
+      <button class="nav-btn active" data-page="dashboard" onclick="showPage('dashboard')"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 11.5 12 5l8 6.5V19a1 1 0 0 1-1 1h-4.5v-5h-5v5H5a1 1 0 0 1-1-1z"/></svg><span>Accueil</span></button>
+      <button class="nav-btn" data-page="planning" onclick="showPage('planning')"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="5.5" width="16" height="14.5" rx="2"/><path d="M4 10h16M8.5 3.5v4M15.5 3.5v4"/></svg><span>Planning</span></button>
+      <button class="nav-btn" data-page="analysis" onclick="showPage('analysis')"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 20V11M12 20V5M19 20v-6"/></svg><span>Analyse</span></button>
+      <button class="nav-btn" data-page="creation" onclick="showPage('creation')"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m12 3.5 1.9 5.1 5.1 1.9-5.1 1.9L12 17.5l-1.9-5.1L5 10.5l5.1-1.9z"/><path d="M18.5 16.5l.7 1.8 1.8.7-1.8.7-.7 1.8-.7-1.8-1.8-.7 1.8-.7z"/></svg><span>Ateliers</span></button>
+      <button class="nav-btn" data-page="clients" onclick="showPage('clients')"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="4" width="7" height="7" rx="1.5"/><rect x="13" y="4" width="7" height="7" rx="1.5"/><rect x="4" y="13" width="7" height="7" rx="1.5"/><circle cx="16.5" cy="16.5" r="3.5"/></svg><span>Entreprise</span></button>
+    </nav>
+  </aside>
+
+  <div class="workspace">
   <header class="topbar">
-    <div class="brand"><strong>CM Tool ✦</strong><span id="page-label">Tableau</span></div>
+    <div class="brand"><strong>CM Tool ✦</strong><span id="page-label">Accueil</span></div>
     <div class="client-switcher" id="client-switcher"></div>
   </header>
 
   <main>
     <section class="page active" id="page-dashboard">
-      <div class="hero-title"><h1>Tableau de bord</h1><p id="week-title">Semaine du 1 septembre</p></div>
+      <div class="hero-title"><span class="hero-eyebrow">Studio CM</span><h1>Bonjour, on prépare quoi aujourd’hui ?</h1><p id="week-title">Semaine du 1 septembre</p></div>
       <div class="grid dashboard-grid">
         <div class="card"><h2>Récap</h2><div class="recap" id="recap"></div></div>
         <div class="card"><h2>Actualités</h2><div class="news-row" id="news"></div><p class="news-status" id="news-status" role="status"></p></div>
-        <div class="card ideas-box"><h2>Idées</h2><div class="idea-actions"><input class="input" id="idea-input" placeholder="Mot-clé ou question"><button class="small-btn" onclick="generateIdeas()">Générer</button></div><p style="color:var(--muted);font-size:13px;margin:0">Entrez un sujet et on prépare des idées de contenus.</p><details class="idea-config"><summary>Connexion Make</summary><input class="input" id="ideas-webhook" placeholder="Webhook Make pour OpenAI" onchange="saveIdeasConfig()"></details><div class="idea-status" id="idea-status"></div><button type="button" class="small-btn" id="ideas-toggle" aria-controls="idea-results" aria-expanded="false" onclick="toggleIdeas()" hidden>Afficher les idées</button><div class="idea-results" id="idea-results" hidden></div></div>
+        <div class="card ideas-box"><h2>Idées</h2><div class="idea-actions"><input class="input" id="idea-input" placeholder="Mot-clé ou question"><button class="small-btn" onclick="generateIdeas()">Générer</button></div><p id="ideas-for" style="color:var(--muted);font-size:13px;margin:0">Entrez un sujet et on prépare des idées de contenus.</p><details class="idea-config"><summary>Connexion Make</summary><input class="input" id="ideas-webhook" placeholder="Webhook Make pour OpenAI" onchange="saveIdeasConfig()"></details><div class="idea-status" id="idea-status"></div><button type="button" class="small-btn" id="ideas-toggle" aria-controls="idea-results" aria-expanded="false" onclick="toggleIdeas()" hidden>Afficher les idées</button><div class="idea-results" id="idea-results" hidden></div></div>
       </div>
       <div class="card" style="margin-top:18px"><h2>Tendances du moment 🔥</h2><div class="trend-strip" id="trends"></div></div>
       <div class="notes-pair" style="margin-top:18px">
@@ -383,18 +510,10 @@
     </section>
 
     <section class="page" id="page-clients">
-      <div class="hero-title"><h1>Entreprises</h1><p>Fiches personnalisables</p></div>
       <div class="company-layout" id="company-layout"></div>
     </section>
   </main>
-
-  <nav class="bottom-nav">
-    <button class="nav-btn active" onclick="showPage('dashboard')"><span>↗</span><span>Tableau</span></button>
-    <button class="nav-btn" onclick="showPage('planning')"><span>▣</span><span>Planning</span></button>
-    <button class="nav-btn" onclick="showPage('analysis')"><span>▥</span><span>Analyse</span></button>
-    <button class="nav-btn" onclick="showPage('creation')"><span>▧</span><span>Création</span></button>
-    <button class="nav-btn" onclick="showPage('clients')"><span>⌂</span><span>Entreprises</span></button>
-  </nav>
+  </div>
 
   <div class="modal-backdrop" id="client-modal" onclick="closeClientModal(event)">
     <div class="client-modal" onclick="event.stopPropagation()">
@@ -553,7 +672,8 @@ function normalizeState(data){
       fonts:Array.isArray(c.fonts)?c.fonts:base.clients[0].fonts,
       keywords:Array.isArray(c.keywords)?c.keywords:[],
       note:typeof c.note==='string'?c.note:'Présentation à compléter...',
-      photos:Array.isArray(c.photos)?c.photos:[]
+      photos:Array.isArray(c.photos)?c.photos:[],
+      assets:Array.isArray(c.assets)?c.assets:[]
     };
   });
   if(!next.clients.some(c=>c.id===next.currentClient))next.currentClient=next.clients[0].id;
@@ -609,23 +729,28 @@ function refreshDailyNews(){if(document.visibilityState==='visible'&&lastNewsDay
 setInterval(refreshDailyNews,60000);
 document.addEventListener('visibilitychange',refreshDailyNews);
 let currentNews=[];
+function newsQuery(c){
+  const terms=(c.keywords||[]).filter(k=>k&&k!=='MOT CLE').slice(0,3);
+  return terms.length?terms.map(t=>'"'+String(t).replace(/["\\]/g,'')+'"').join(' OR '):c.name;
+}
 async function renderLiveNews(){
   const request=++newsRequest;
-  const c=client();
-  const terms=(c.keywords||[]).filter(Boolean).slice(0,3);
-  const query=terms.length?terms.map(t=>'"'+String(t).replace(/["\\]/g,'')+'"').join(' OR '):c.name;
+  const brands=viewIds().map(brandById).filter(Boolean).slice(0,4),multi=brands.length>1;
   const root=document.getElementById('news');
   const status=document.getElementById('news-status');
   root.innerHTML='';currentNews=[];
   status.textContent='Recherche des actualités récentes…';
   try{
-    const data=await fetchClientNews(query);
+    const results=await Promise.allSettled(brands.map(b=>fetchClientNews(newsQuery(b))));
     if(request!==newsRequest)return;
+    if(results.every(r=>r.status==='rejected'))throw Error('news unavailable');
     lastNewsDay=newsDay();
-    currentNews=data.items||[];
+    // Alternate between brands so each one gets its share of the strip.
+    const lists=results.map((r,i)=>r.status==='fulfilled'?(r.value.items||[]).map(n=>({...n,brand:brands[i]})):[]);
+    for(let i=0;currentNews.length<(multi?12:8)&&lists.some(l=>l[i]);i++)lists.forEach(l=>{if(l[i]&&currentNews.length<(multi?12:8))currentNews.push(l[i])});
     root.innerHTML=currentNews.map((n,index)=>{
       const theme=newsTheme(n.title);
-      return `<a class="news-chip" href="${safe(n.url)}" target="_blank" rel="noopener noreferrer">${picto(newsPicto(n.title),index+1)}<strong class="news-theme">${safe(theme)}</strong><span class="news-description">${safe(n.title)}</span><small>${safe(n.source)} · ${new Date(n.date).toLocaleDateString('fr-FR')}</small></a>`;
+      return `<a class="news-chip" href="${safe(n.url)}" target="_blank" rel="noopener noreferrer">${picto(newsPicto(n.title),index+1)}${multi?`<span class="news-brand">${brandChip(n.brand)}${safe(n.brand.name)}</span>`:''}<strong class="news-theme">${safe(theme)}</strong><span class="news-description">${safe(n.title)}</span><small>${safe(n.source)} · ${new Date(n.date).toLocaleDateString('fr-FR')}</small></a>`;
     }).join('');
     status.textContent=currentNews.length?'Google Actualités'+(staticHosting?' · via RSS2JSON':'')+' · Articles des 14 derniers jours':'Aucun article récent trouvé pour cette entreprise. Complète ses mots-clés dans Entreprises.';
   }catch(error){
@@ -650,23 +775,54 @@ function newsTheme(text){
   return themes.find(([pattern])=>pattern.test(t))?.[1]||'ACTUALITÉ';
 }
 function newsPicto(text){const t=text.toLowerCase();return /étude|recherche|scientifi/.test(t)?'search':/santé|sommeil|prévention|maladie|hôpital/.test(t)?'health':/pokémon|pokemon|jeux|gaming/.test(t)?'game':/festival|journée|événement/.test(t)?'calendar':/écolog|climat|environnement/.test(t)?'leaf':/restaurant|aliment|nutrition/.test(t)?'food':/entreprise|travail/.test(t)?'business':'news'}
+// Brand picker: one brand on most pages, several on Accueil and Planning.
+const MULTI_PAGES=['dashboard','planning'];
+let currentPage='dashboard',brandMenuOpen=false;
+function viewIds(){const ids=(state.viewClients||[]).filter(id=>state.clients.some(c=>c.id===id));return ids.length?ids:[currentClient]}
+function brandById(id){return state.clients.find(c=>c.id===id)}
+function inkOn(hex){if(!/^#[0-9a-f]{6}$/i.test(hex||''))return '#ffffff';const v=hex.slice(1).match(/../g).map(x=>{const s=parseInt(x,16)/255;return s<=.04045?s/12.92:((s+.055)/1.055)**2.4});return .2126*v[0]+.7152*v[1]+.0722*v[2]>.179?'#191919':'#ffffff'}
+function brandChip(c){return `<span class="brand-chip" style="background:${safe(c.colors[0])};color:${inkOn(c.colors[0])}">${safe(c.initials)}</span>`}
 function renderClients(){
   const wrap=document.getElementById('client-switcher');
-  wrap.innerHTML=state.clients.map(c=>`<button class="client-pill ${c.id===currentClient?'active':''}" style="background:${c.colors[0]}" onclick="selectClient('${c.id}')">${safe(c.initials)}</button>`).join('')+`<button class="add-client" onclick="openClientModal()">+</button>`;
+  const multi=MULTI_PAGES.includes(currentPage),ids=multi?viewIds():[currentClient];
+  const shown=ids.map(brandById).filter(Boolean);
+  const label=shown.length>1?`${shown.length} marques`:safe(client().name);
+  const items=state.clients.map(c=>`<label class="brand-option"><input type="${multi?'checkbox':'radio'}" name="brand-pick" ${ids.includes(c.id)?'checked':''} onchange="pickBrand('${safe(c.id)}',this.checked)">${brandChip(c)}<span>${safe(c.name)}</span></label>`).join('');
+  wrap.innerHTML=`<div class="brand-picker"><button type="button" class="brand-picker-btn" aria-haspopup="true" aria-expanded="${brandMenuOpen}" onclick="toggleBrandMenu()"><span class="brand-chips">${shown.slice(0,3).map(brandChip).join('')}</span><span class="brand-picker-text"><small>${multi?'Marques affichées':'Marque'}</small><strong>${label}</strong></span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m7 10 5 5 5-5"/></svg></button>
+    <div class="brand-menu" ${brandMenuOpen?'':'hidden'}><p class="brand-menu-hint">${multi?'Coche plusieurs marques pour tout voir ensemble.':'Choisis la marque à afficher.'}</p>${items}<button type="button" class="brand-menu-add" onclick="toggleBrandMenu(false);openClientModal()">+ Ajouter une marque</button></div></div>`;
 }
-function selectClient(id){currentClient=id;render()}
+function toggleBrandMenu(open=!brandMenuOpen){brandMenuOpen=open;renderClients()}
+function pickBrand(id,checked){
+  if(!MULTI_PAGES.includes(currentPage)){brandMenuOpen=false;selectClient(id);return}
+  let ids=viewIds().filter(x=>x!==id);
+  if(checked)ids.push(id);
+  if(!ids.length)ids=[id];
+  state.viewClients=ids;
+  if(!ids.includes(currentClient))currentClient=ids[0];
+  render();
+}
+document.addEventListener('click',e=>{if(brandMenuOpen&&!e.target.closest('.brand-picker'))toggleBrandMenu(false)});
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&brandMenuOpen)toggleBrandMenu(false)});
+function selectClient(id){currentClient=id;if(!viewIds().includes(id))state.viewClients=[id];render()}
 function showPage(id){
+  currentPage=id;brandMenuOpen=false;renderClients();
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
   document.getElementById('page-'+id).classList.add('active');
-  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
-  [...document.querySelectorAll('.nav-btn')].find(b=>b.textContent.toLowerCase().includes(id==='dashboard'?'tableau':id==='clients'?'entreprises':id))?.classList.add('active');
-  document.getElementById('page-label').textContent={dashboard:'Tableau',planning:'Planning',analysis:'Analyse',creation:'Création',clients:'Entreprises'}[id];
+  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.toggle('active',b.dataset.page===id));
+  document.getElementById('page-label').textContent={dashboard:'Accueil',planning:'Planning',analysis:'Analyse',creation:'Ateliers',clients:'Entreprise'}[id];
+  window.scrollTo(0,0);
 }
 function renderDashboard(){
   const c=client();
 
-  document.getElementById('week-title').textContent='Semaine du 1 septembre';
-  document.getElementById('recap').innerHTML=[['3','posts prévus'],['2','stories prévues'],['1','post à programmer']].map(m=>`<div class="metric"><strong>${m[0]}</strong><span>${m[1]}</span></div>`).join('');
+  const start=new Date();start.setHours(12,0,0,0);start.setDate(start.getDate()-(start.getDay()+6)%7);
+  const week=Array.from({length:7},(_,i)=>{const d=new Date(start);d.setDate(start.getDate()+i);return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`});
+  const ids=viewIds(),weekPlans=state.plans.filter(p=>ids.includes(p.clientId)&&week.includes(p.date));
+  const count=fn=>weekPlans.filter(fn).length,plural=(n,one,many)=>n>1?many:one;
+  const posts=count(p=>p.type==='Post'),stories=count(p=>p.type==='Story'),todo=count(p=>p.type!=='Rdv'&&p.status!=='Publié');
+  document.getElementById('week-title').textContent='Semaine du '+start.toLocaleDateString('fr-FR',{day:'numeric',month:'long'})+(ids.length>1?` · ${ids.length} marques`:'');
+  document.getElementById('recap').innerHTML=[[posts,plural(posts,'post prévu','posts prévus')],[stories,plural(stories,'story prévue','stories prévues')],[todo,plural(todo,'contenu à finaliser','contenus à finaliser')]].map(m=>`<div class="metric"><strong>${m[0]}</strong><span>${m[1]}</span></div>`).join('');
+  document.getElementById('ideas-for').innerHTML=ids.length>1?`<label class="ideas-brand">Idées pour <select class="input" onchange="currentClient=this.value;render()">${ids.map(brandById).filter(Boolean).map(b=>`<option value="${safe(b.id)}" ${b.id===c.id?'selected':''}>${safe(b.name)}</option>`).join('')}</select></label>`:'Entrez un sujet et on prépare des idées de contenus.';
   renderLiveNews();
   renderSharedTrends();
   renderIdeas();
@@ -748,7 +904,7 @@ async function generateIdeas(){
       fonts:c.fonts
     },
     existingPlanning:state.plans.slice(-20),
-    news:currentNews.map(n=>`${n.title} (${n.source}, ${n.date}) ${n.url}`)
+    news:currentNews.filter(n=>!n.brand||n.brand.id===currentClient).map(n=>`${n.title} (${n.source}, ${n.date}) ${n.url}`)
   };
   payload.prompt=buildIdeasPrompt(payload);
   status.textContent='Génération des idées...';
@@ -846,7 +1002,8 @@ function renderPlanning(){
   document.getElementById('planning-note').value=state.notes.planning||'';
   document.getElementById('planning-note').oninput=e=>{state.notes.planning=e.target.value;save()};
 }
-function itemHtml(p){if(p.type==='Rdv')return `<button type="button" class="plan-item rdv-postit" data-format="Rdv" data-content-id="${safe(p.id)}"><span class="rdv-postit-title"><span aria-hidden="true">📌</span> ${safe(p.time||p.heure||'')}${p.time||p.heure?' · ':''}${safe(p.title)}</span><span class="rdv-postit-client">${safe(state.clients.find(c=>c.id===p.clientId)?.name||'')}</span><span class="rdv-postit-hint">Voir la fiche</span></button>`;return `<button type="button" class="plan-item" data-format="${safe(p.type)}" style="width:100%;text-align:left;border:0;cursor:pointer" data-content-id="${safe(p.id)}">${safe(p.title)}<div style="font-size:11px;font-weight:600;opacity:.9">Voir la fiche</div></button>`}
+function planBrand(p){if(viewIds().length<2)return '';const b=brandById(p.clientId);return b?`<span class="plan-brand">${brandChip(b)}${safe(b.name)}</span>`:''}
+function itemHtml(p){if(p.type==='Rdv')return `<button type="button" class="plan-item rdv-postit" data-format="Rdv" data-content-id="${safe(p.id)}">${planBrand(p)}<span class="rdv-postit-title"><span aria-hidden="true">📌</span> ${safe(p.time||p.heure||'')}${p.time||p.heure?' · ':''}${safe(p.title)}</span><span class="rdv-postit-client">${safe(state.clients.find(c=>c.id===p.clientId)?.name||'')}</span><span class="rdv-postit-hint">Voir la fiche</span></button>`;return `<button type="button" class="plan-item" data-format="${safe(p.type)}" style="width:100%;text-align:left;border:0;cursor:pointer" data-content-id="${safe(p.id)}">${planBrand(p)}${safe(p.title)}<div style="font-size:11px;font-weight:600;opacity:.9">Voir la fiche</div></button>`}
 
 function renderAnalysis(){
   const c=client();
@@ -937,19 +1094,84 @@ function saveReportEdit(e){
   save();
 }
 
+// Brand sheet: identity on top, then a library of visuals sorted by category.
+const LIBRARY_CATEGORIES=['Fond','Logo','Produits','Personnages','Emojis','Éléments'];
+const BUILTIN_LIBRARIES={observatoire:{
+  Personnages:{script:'assets/studio/os-people.js',key:'OS_PEOPLE'},
+  Emojis:{script:'assets/studio/os-emojis.js',key:'OS_EMOJIS'},
+  Éléments:{items:['rhume','batterie','goutte','crampes','mains','migraine'].map(n=>({name:n[0].toUpperCase()+n.slice(1),src:`assets/studio/${n}.png`}))}
+}};
+let libraryTab='Fond';
+const libraryLoads={};
+function loadLibrary(lib){
+  if(window[lib.key])return Promise.resolve(window[lib.key]);
+  return libraryLoads[lib.key]||=new Promise((resolve,reject)=>{const script=document.createElement('script');script.src=lib.script;script.onload=()=>resolve(window[lib.key]||[]);script.onerror=()=>{delete libraryLoads[lib.key];script.remove();reject(Error('library'))};document.head.append(script)});
+}
+function brandAssets(c,cat){
+  const own=(c.assets||[]).filter(a=>a.category===cat).map(a=>({...a,own:true}));
+  const lib=BUILTIN_LIBRARIES[c.id]?.[cat];
+  const builtin=lib?.items||(lib&&window[lib.key])||[];
+  if(cat==='Fond'){const [a,b,d]=c.colors;return [
+    {name:'Dégradé marque',bg:`linear-gradient(135deg,${a},${b})`},
+    {name:'Dégradé doux',bg:`linear-gradient(160deg,color-mix(in srgb,${d} 35%,#fff),color-mix(in srgb,${b} 20%,#fff))`},
+    {name:'Halo',bg:`radial-gradient(circle at 30% 25%,color-mix(in srgb,${b} 45%,#fff),${a})`},
+    {name:'Uni couleur 1',bg:a},{name:'Uni couleur 2',bg:b},{name:'Uni couleur 3',bg:d},...own]}
+  if(cat==='Logo')return [...(c.logo?[{name:'Logo principal',src:c.logo}]:[]),...(c.creationLogo?[{name:'Logo blanc',src:c.creationLogo,dark:true}]:[]),...own];
+  if(cat==='Produits')return [...c.photos.map((src,i)=>({name:`Photo ${i+1}`,src,photo:i})),...own];
+  return [...builtin,...own];
+}
+function assetTile(a){
+  const remove=a.own?`<button type="button" class="asset-remove" aria-label="Retirer ${safe(a.name)}" onclick="removeBrandAsset('${safe(a.id)}')">×</button>`:a.photo!==undefined?`<button type="button" class="asset-remove" aria-label="Retirer ${safe(a.name)}" onclick="removeBrandPhoto(${a.photo})">×</button>`:'';
+  return `<figure class="asset-tile"><div class="asset-thumb ${a.dark?'dark':''}" ${a.bg?`style="background:${safe(a.bg)}"`:''}>${a.src?`<img src="${safe(a.src)}" alt="" loading="lazy">`:''}</div><figcaption>${safe(a.name)}</figcaption>${remove}</figure>`;
+}
+function libraryGroup(c,cat){
+  const lib=BUILTIN_LIBRARIES[c.id]?.[cat];
+  if(lib?.key&&!window[lib.key]){
+    loadLibrary(lib).then(()=>{if(client().id===c.id&&currentPage==='clients')renderCompany()}).catch(()=>{});
+  }
+  const items=brandAssets(c,cat);
+  const loading=lib?.key&&!window[lib.key];
+  const body=items.length?`<div class="library-grid">${items.map(assetTile).join('')}</div>`:`<p class="library-empty">${loading?'Chargement de la bibliothèque…':`Aucun visuel dans « ${safe(cat)} » pour l’instant. Ajoute-les avec « + Ajouter un asset ».`}</p>`;
+  return `<div class="library-group"><h3>${safe(cat)} <span>${items.length||''}</span></h3>${body}</div>`;
+}
+function setLibraryTab(tab){libraryTab=tab;renderCompany()}
 function renderCompany(){
   const c=client();
   const layout=document.getElementById('company-layout');
-  const logoHtml=c.logo?`<img src="${c.logo}">`:`<strong style="font-size:44px;color:${c.colors[0]}">${safe(c.initials)}</strong>`;
+  const logoHtml=c.logo?`<img src="${safe(c.logo)}" alt="Logo ${safe(c.name)}">`:`<strong style="color:${safe(c.colors[0])}">${safe(c.initials)}</strong>`;
   const preview=(c.note||'Présentation à compléter...').split('\n').filter(Boolean).slice(0,2).join('\n');
+  const tabs=[...LIBRARY_CATEGORIES,'Tout'];
   layout.innerHTML=`
-    <div class="pin-card company-logo-card">${logoHtml}<div style="font-family:'Cormorant Garamond';font-size:25px;text-transform:uppercase;margin-top:10px">${safe(c.name||'Client')}</div></div>
-    ${c.photos.map(src=>`<div class="pin-card"><img src="${src}"></div>`).join('')}
-    <div class="pin-card keyword-card"><h3>Mots clés</h3><div class="keyword-list">${c.keywords.map(k=>`<span>#${safe(k)}</span>`).join('')}<button type="button" class="keyword-add" aria-label="Ajouter un mot-clé" onclick="openKeywordInput(this)">+</button></div></div>
-    <div class="swatches">${c.colors.map((col,i)=>`<button type="button" class="swatch" style="background:${col}" aria-label="Couleur ${i+1} de l’entreprise" onclick="openPaletteColor(${i})"></button>`).join('')}</div>
-    <div class="pin-card company-note-card"><div class="company-note-inner"><div class="company-note-preview">${safe(preview)}</div><button class="note-more" onclick="openNoteModal()">...</button></div></div>
-    <button class="small-btn photo-add" onclick="addPhotoPlaceholder()">+ Ajouter photo</button>`;
+    <header class="brand-hero"><div class="brand-hero-logo">${logoHtml}</div><div><span class="hero-eyebrow">Fiche entreprise</span><h1>${safe(c.name||'Client')}</h1></div></header>
+    <div class="brand-identity">
+      <section class="card"><h2>Couleurs</h2><div class="swatches">${c.colors.map((col,i)=>`<button type="button" class="swatch" style="background:${safe(col)}" aria-label="Couleur ${i+1} de l’entreprise" onclick="openPaletteColor(${i})"></button>`).join('')}</div></section>
+      <section class="card keyword-card"><h2>Mots-clés</h2><div class="keyword-list">${c.keywords.map(k=>`<span>#${safe(k)}</span>`).join('')}<button type="button" class="keyword-add" aria-label="Ajouter un mot-clé" onclick="openKeywordInput(this)">+</button></div></section>
+      <section class="card company-note-card"><h2>Présentation</h2><div class="company-note-preview">${safe(preview)}</div><button class="note-more" onclick="openNoteModal()">Lire et modifier</button></section>
+    </div>
+    <section class="card brand-library">
+      <div class="library-head"><div class="library-tabs" role="tablist" aria-label="Catégories de visuels">${tabs.map(t=>`<button type="button" role="tab" aria-selected="${t===libraryTab}" class="library-tab ${t===libraryTab?'active':''}" onclick="setLibraryTab('${t}')">${t}</button>`).join('')}</div>
+      <label class="small-btn library-add">+ Ajouter un asset<input type="file" accept="image/*" multiple onchange="addBrandAssets(this.files);this.value=''"></label></div>
+      <p class="library-status" id="library-status" role="status"></p>
+      ${(libraryTab==='Tout'?LIBRARY_CATEGORIES:[libraryTab]).map(cat=>libraryGroup(c,cat)).join('')}
+    </section>`;
 }
+// Large photos are reduced before saving so the browser storage does not fill up.
+function shrinkImage(file,max=1200){
+  if(file.type==='image/svg+xml'||file.type==='image/gif')return readFile(file);
+  return new Promise(resolve=>{const url=URL.createObjectURL(file),img=new Image();img.onload=()=>{const k=Math.min(1,max/Math.max(img.width,img.height)),cv=document.createElement('canvas');cv.width=Math.round(img.width*k);cv.height=Math.round(img.height*k);cv.getContext('2d').drawImage(img,0,0,cv.width,cv.height);URL.revokeObjectURL(url);resolve(file.type==='image/jpeg'?cv.toDataURL('image/jpeg',.85):cv.toDataURL('image/png'))};img.onerror=()=>{URL.revokeObjectURL(url);resolve('')};img.src=url});
+}
+async function addBrandAssets(files){
+  const c=client(),category=libraryTab==='Tout'?'Éléments':libraryTab;
+  const added=(await Promise.all([...files].filter(f=>f.type.startsWith('image/')).map(async f=>({id:'asset-'+Date.now().toString(36)+Math.random().toString(36).slice(2,7),category,name:f.name.replace(/\.[^.]+$/,''),src:await shrinkImage(f)})))).filter(a=>a.src);
+  if(!added.length)return;
+  const before=c.assets||[],logoBefore=c.logo;
+  c.assets=[...before,...added];
+  if(category==='Logo'&&!c.logo)c.logo=added[0].src;
+  try{save()}catch(e){c.assets=before;c.logo=logoBefore;renderCompany();document.getElementById('library-status').textContent='Stockage du navigateur plein : retire quelques visuels ou utilise des images plus légères.';return}
+  renderCompany();renderClients();
+}
+function removeBrandAsset(id){const c=client();c.assets=(c.assets||[]).filter(a=>a.id!==id);save();renderCompany()}
+function removeBrandPhoto(i){client().photos.splice(i,1);save();renderCompany()}
 function openPaletteColor(index){
   const dialog=document.createElement('dialog');dialog.className='palette-dialog';
   dialog.innerHTML=`<strong>Couleur ${index+1}</strong><label>Choisir une couleur<input type="color" value="${client().colors[index]}" aria-label="Sélecteur de couleur"></label><label>Code couleur<input class="input" value="${client().colors[index]}" aria-label="Code hexadécimal" pattern="#[0-9a-fA-F]{6}" maxlength="7"></label><button type="button" class="small-btn" data-pipette>Pipette écran</button><p role="status"></p><button type="button" class="quiet-add" data-close>Terminer</button>`;
@@ -1070,7 +1292,7 @@ renderPlanning=function(){
   originalRenderPlanning();
   const selected=document.getElementById('plan-date').value||iso(today);
   const date=new Date(selected+'T12:00:00');
-  const plans=state.plans.filter(p=>p.clientId===currentClient);
+  const ids=viewIds(),plans=state.plans.filter(p=>ids.includes(p.clientId));
   const root=document.getElementById('planning-view');
   const dateKey=d=>`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
   const items=d=>plans.filter(p=>p.date===dateKey(d)).map(itemHtml).join('');
@@ -1083,8 +1305,10 @@ renderPlanning=function(){
     const count=planningView==='week'?7:Math.ceil(((new Date(date.getFullYear(),date.getMonth(),1).getDay()+6)%7+new Date(date.getFullYear(),date.getMonth()+1,0).getDate())/7)*7;
     root.innerHTML=`<div class="content-calendar ${planningView}">${Array.from({length:count},(_,i)=>{const d=new Date(start);d.setDate(start.getDate()+i);return `<section class="content-day"><strong>${safe(d.toLocaleDateString('fr-FR',{weekday:'short',day:'numeric'}))}</strong><div>${items(d)}</div></section>`}).join('')}</div>`;
   }
-  root.querySelectorAll('[data-content-id]').forEach(button=>button.onclick=()=>openContentSheet(button.dataset.contentId));
+  root.querySelectorAll('[data-content-id]').forEach(button=>button.onclick=()=>openPlanItem(button.dataset.contentId));
 };
+// Opening another brand's content makes that brand the active one, so its sheet keeps working.
+function openPlanItem(id){const p=state.plans.find(p=>p.id===id);if(!p)return;if(p.clientId!==currentClient){currentClient=p.clientId;render()}openContentSheet(id)}
 document.getElementById('plan-date').addEventListener('change',()=>renderPlanning());
 let contentReturnFocus=null;
 function openContentSheet(id,seed={}){
@@ -1200,6 +1424,6 @@ function openAnalysisImport(){
 
 render();
 </script>
-<script src="assets/studio/studio.js?v=714db53"></script>
+<script src="assets/studio/studio.js?v=ateliers-2"></script>
 </body>
 </html>
